@@ -28,16 +28,17 @@ extension VTX {
     }
 }
 */
+var h2 = hE() //all halfedge properties are optionals
+var h3 = hE()
 
-
-var v1 = VTX(loc: SIMD3<Float>(x: 2, y: 0, z: 2), id: 1)
-var v2 = VTX(loc: SIMD3<Float>(x: 2, y: 2, z: 2), id: 2)
-var v3 = VTX(loc: SIMD3<Float>(x: 0, y: 2, z: 2), id: 3)
-var v4 = VTX(loc: SIMD3<Float>(x: 0, y: 0, z: 2), id: 4)
-var v5 = VTX(loc: SIMD3<Float>(x: 0, y: 0.5, z: 0), id: 5)
-var v6 = VTX(loc: SIMD3<Float>(x: 0, y: 2, z: 0), id: 6)
-var v7 = VTX(loc: SIMD3<Float>(x: 2, y: 2, z: 0), id: 7)
-var v8 = VTX(loc: SIMD3<Float>(x: 0.3, y: 0.5, z: 0.11), id: 8)
+var v1 = VTX(loc: SIMD3<Float>(x: 2, y: 0, z: 2), id: 1,hE:&h2)
+var v2 = VTX(loc: SIMD3<Float>(x: 2, y: 2, z: 2), id: 2,hE: &h3)
+var v3 = VTX(loc: SIMD3<Float>(x: 0, y: 2, z: 2), id: 3,hE:&h3)
+var v4 = VTX(loc: SIMD3<Float>(x: 0, y: 0, z: 2), id: 4,hE:&h3)
+var v5 = VTX(loc: SIMD3<Float>(x: 0, y: 0.5, z: 0), id: 5,hE:&h3)
+var v6 = VTX(loc: SIMD3<Float>(x: 0, y: 2, z: 0), id: 6,hE:&h3)
+var v7 = VTX(loc: SIMD3<Float>(x: 2, y: 2, z: 0), id: 7,hE:&h3)
+var v8 = VTX(loc: SIMD3<Float>(x: 0.3, y: 0.5, z: 0.11), id: 8,hE:&h3)
 
 
 var pt = UnsafePointer<VTX>?(&v1)
@@ -72,11 +73,15 @@ var f1 = FCE(vertices: [unsafe(v1),
                                  UnsafePointer<VTX>(&v4)])
 */
 var f1 = FCE(&v1,&v2,&v3,&v4)
-var f2 = FCE([unsafe(&v5),unsafe(&v6),unsafe(&v7),unsafe(&v8)])
+
+var h1 = hE(vertex: &v1, face: &f1)
+
+
+var f2 = FCE([unsafe(&v5),unsafe(&v6),unsafe(&v7),unsafe(&v8)],halfEdges: [unsafe(&h1)])
     //var f3 = FCE([&v1,&v2]) // won't work no implicit conversion to pointer unless
     //the &'d item is a funcrion argument directly.  Meaningless to have an array of
     //&'d things.
-var sideface =  FCE([unsafe(&v3),unsafe(&v4),unsafe(&v7),unsafe(&v8)])
+var sideface =  FCE([unsafe(&v3),unsafe(&v4),unsafe(&v7),unsafe(&v8)], halfEdges: [unsafe(&h1)])
 var frontFace = FCE(&v2,&v3,&v4)
 
 print("found instance is \(f2.vertices[0]!.pointee)")
@@ -91,7 +96,7 @@ if f2.vertices[0]! == unsafe(&v5) {
 }
 f1.vertices[2] = unsafe(&v1)
 
-var h1 = HE(vertex: &v1, face: &f1)
+
 
 var here:UnsafePointer<VTX> = (f2.vertices.first(where: {$0?.pointee.loc.hashValue == v5.loc.hashValue}))!!//UnsafePointer<VTX>(&v5)})
 print("unsafe pointer found is :\(here)")
